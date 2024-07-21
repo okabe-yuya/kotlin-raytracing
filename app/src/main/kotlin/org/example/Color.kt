@@ -13,6 +13,6 @@ fun writeColor(pixelColor: Color) {
     val gByte: Int = (255.999 * g).toInt()
     val bByte: Int = (255.999 * b).toInt()
 
-    print("${rByte} ${gByte} ${bByte}")
+    println("${rByte} ${gByte} ${bByte}")
 }
 

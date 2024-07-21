@@ -3,6 +3,8 @@
  */
 package org.example
 
+import org.example.Vec3
+import org.example.Color
 
 fun main() {
     // Image
@@ -17,18 +19,14 @@ fun main() {
             System.err.println("\rScanlines remaining: ${imageHeight - j} ")
             System.err.flush()
 
-            val r = i.toDouble() / (imageWidth - 1)
-            val g = j.toDouble() / (imageHeight - 1)
-            val b = 0.0
+            val pixelColor = Color(
+                i.toDouble() / (imageWidth - 1),
+                j.toDouble() / (imageHeight - 1),
+                0.0,
+            )
+            writeColor(pixelColor)
 
-            val ir: Int = (255.999 * r).toInt()
-            val ig: Int = (255.999 * g).toInt()
-            val ib: Int = (255.999 * b).toInt()
-
-            print("${ir} ${ig} ${ib}\n")
         }
     }
-
-
 }
 
