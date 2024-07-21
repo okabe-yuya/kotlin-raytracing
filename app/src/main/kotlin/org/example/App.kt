@@ -14,6 +14,9 @@ fun main() {
 
     for  (j in 0..(imageHeight - 1)) {
         for  (i in 0..(imageWidth - 1)) {
+            System.err.println("\rScanlines remaining: ${imageHeight - j} ")
+            System.err.flush()
+
             val r = i.toDouble() / (imageWidth - 1)
             val g = j.toDouble() / (imageHeight - 1)
             val b = 0.0
