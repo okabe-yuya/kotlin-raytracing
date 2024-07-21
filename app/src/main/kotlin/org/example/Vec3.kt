@@ -17,7 +17,10 @@ data class Vec3(
         get() = e2
 
     operator fun get(i: Int): Double = elements[i]
-    operator fun set(i: Int, _v: Double): Nothing = throw UnsupportedOperationException("read only")
+    operator fun set(
+        @Suppress("UNUSED_PARAMETER") i: Int,
+        @Suppress("UNUSED_PARAMETER") v: Double,
+    ): Nothing = throw UnsupportedOperationException("read only")
 
     operator fun plus(v: Vec3): Vec3 = Vec3(e0 + v.e0, e1 + v.e1, e2 + v.e2)
     operator fun minus(v: Vec3): Vec3 = Vec3(e0 - v.e0, e1 - v.e1, e2 - v.e2)
@@ -63,12 +66,12 @@ data class Vec3(
             e0 * v.e1 - e1 * v.e0,
         )
     }
-
-    fun unitVector(v: Vec3): Vec3 {
-        return v / length()
-    }
 }
 
+
+fun unitVector(v: Vec3): Vec3 {
+    return v / v.length()
+}
 
 operator fun Double.times(v: Vec3): Vec3 {
     return Vec3(this * v.e0, this * v.e1, this * v.e2)
