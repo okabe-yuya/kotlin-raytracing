@@ -59,7 +59,10 @@ data class Vec3(
         return sqrt(lengthSquared)
     }
 
-    fun dot(v: Vec3): Vec3 {
+    fun dot(v: Vec3): Double {
+        return e0 * v.e0 + e1 * v.e1 + e2 * v.e2
+    }
+    fun cross(v: Vec3): Vec3 {
         return Vec3(
             e1 * v.e2 - e2 * v.e1,
             e2 * v.e0 - e0 * v.e2,

@@ -8,7 +8,21 @@ import org.example.Color
 import org.example.Ray
 
 
+fun hitSphere(center: Point3, radius: Double, r: Ray): Boolean {
+    val oc: Vec3 = center - r.origin
+    val a = r.direction.dot(r.direction)
+    val b = -2.0 * (r.direction.dot(oc))
+    val c = oc.dot(oc) - radius * radius
+    val discriminant = b * b - (a * c) * 4.0
+
+    return discriminant >= 0
+}
+
 fun rayColor(r: Ray): Color {
+    if (hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r)) {
+        return Color(1.0, 0.0, 0.0)
+    }
+
     val unitDirection: Vec3 = unitVector(r.direction)
     val a = 0.5 * (unitDirection.y + 1.0)
     return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0)
