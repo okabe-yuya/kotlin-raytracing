@@ -6,21 +6,27 @@ package org.example
 import org.example.Vec3
 import org.example.Color
 import org.example.Ray
+import kotlin.math.sqrt
 
-
-fun hitSphere(center: Point3, radius: Double, r: Ray): Boolean {
+fun hitSphere(center: Point3, radius: Double, r: Ray): Double {
     val oc: Vec3 = center - r.origin
     val a = r.direction.dot(r.direction)
     val b = -2.0 * (r.direction.dot(oc))
     val c = oc.dot(oc) - radius * radius
     val discriminant = b * b - (a * c) * 4.0
 
-    return discriminant >= 0
+    if (discriminant < 0) {
+        return -1.0
+    } else {
+        return (-b - sqrt(discriminant)) / (2.0 * a) 
+    }
 }
 
 fun rayColor(r: Ray): Color {
-    if (hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r)) {
-        return Color(1.0, 0.0, 0.0)
+    val t = hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r)
+    if (t > 0.0) {
+        val N = unitVector(r.at(t) - Vec3(0.0, 0.0, -1.0))
+        return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
     }
 
     val unitDirection: Vec3 = unitVector(r.direction)
