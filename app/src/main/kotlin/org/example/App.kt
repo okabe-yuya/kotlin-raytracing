@@ -3,30 +3,15 @@
  */
 package org.example
 
-import org.example.Vec3
-import org.example.Color
-import org.example.Ray
-import kotlin.math.sqrt
+import org.example.Rtweekend.*
+import org.example.Hittable
+import org.example.HittableList
+import org.example.Sphere
 
-fun hitSphere(center: Point3, radius: Double, r: Ray): Double {
-    val oc: Vec3 = center - r.origin
-    val a = r.direction.dot(r.direction)
-    val b = -2.0 * (r.direction.dot(oc))
-    val c = oc.dot(oc) - radius * radius
-    val discriminant = b * b - (a * c) * 4.0
-
-    if (discriminant < 0) {
-        return -1.0
-    } else {
-        return (-b - sqrt(discriminant)) / (2.0 * a) 
-    }
-}
-
-fun rayColor(r: Ray): Color {
-    val t = hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r)
-    if (t > 0.0) {
-        val N = unitVector(r.at(t) - Vec3(0.0, 0.0, -1.0))
-        return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
+fun rayColor(r: Ray, world: Hittable): Color {
+    var rec: HitRecord = HitRecord.default()
+    if (world.hit(r, 0.0, infinity, rec)) {
+        return 0.5 * (rec.normal + Color(1.0, 1.0, 1.0))
     }
 
     val unitDirection: Vec3 = unitVector(r.direction)
@@ -44,6 +29,11 @@ fun main() {
     } else {
         imageHeight
     }
+
+    // World
+    val world: HittableList = HittableList()
+    world.add(Sphere(Point3(0.0, 0.0, -1.0), 0.5))
+    world.add(Sphere(Point3(0.0, -100.5, -1.0), 100.0))
 
     // Camera
     val focalLength = 1.0
@@ -75,7 +65,7 @@ fun main() {
             val rayDirection = pixelCenter - cameraCenter
             val r = Ray(cameraCenter, rayDirection)
 
-            val pixelColor = rayColor(r) 
+            val pixelColor = rayColor(r, world) 
             writeColor(pixelColor)
 
         }
