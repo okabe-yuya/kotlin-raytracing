@@ -31,6 +31,7 @@ class HittableList(
             if (it.hit(r, rayTmin, closestSoFar, tempRec)) {
                 hitAnything = true
                 closestSoFar = tempRec.t
+
                 rec.t = tempRec.t
                 rec.p = tempRec.p
                 rec.normal = tempRec.normal

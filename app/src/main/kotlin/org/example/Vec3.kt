@@ -55,8 +55,11 @@ data class Vec3(
     }
     
     fun length(): Double {
-        val lengthSquared = e0 * e0 + e1 * e1 + e2 * e2
-        return sqrt(lengthSquared)
+        return sqrt(lengthSquared())
+    }
+
+    fun lengthSquared(): Double {
+        return e0 * e0 + e1 * e1 + e2 * e2
     }
 
     fun dot(v: Vec3): Double {

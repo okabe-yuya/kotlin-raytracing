@@ -8,8 +8,9 @@ import org.example.Hittable
 import org.example.HittableList
 import org.example.Sphere
 
+
 fun rayColor(r: Ray, world: Hittable): Color {
-    var rec: HitRecord = HitRecord.default()
+    val rec: HitRecord = HitRecord.default()
     if (world.hit(r, 0.0, infinity, rec)) {
         return 0.5 * (rec.normal + Color(1.0, 1.0, 1.0))
     }

@@ -17,9 +17,9 @@ class Sphere(val center: Point3, radius: Double) : Hittable {
         rec: HitRecord,
     ): Boolean {
         val oc = center - r.origin
-        val a = r.direction.length()
+        val a = r.direction.lengthSquared()
         val h = r.direction.dot(oc)
-        val c = oc.length() - radius * radius
+        val c = oc.lengthSquared() - radius * radius
 
         val discriminant = h * h - a * c
         if (discriminant < 0.0) {
@@ -37,16 +37,11 @@ class Sphere(val center: Point3, radius: Double) : Hittable {
             }
         }
 
-        val newT = root
-        val newP = r.at(newT)
-        val newNormal = (newP - center) / radius 
-        val outwardNormal = (newP - center) / radius
-        val newRec = HitRecord(
-            p = newP,
-            t = newT,
-            normal = newNormal,
-        )
-        newRec.setFaceNormal(r, outwardNormal) 
+        rec.t = root
+        rec.p = r.at(rec.t)
+
+        val outwardNormal: Vec3 = (rec.p - center) / radius
+        rec.setFaceNormal(r, outwardNormal) 
 
         return true
     }
