@@ -3,6 +3,8 @@ package org.example.Rtweekend
 import org.example.Color
 import org.example.Ray
 import org.example.Vec3
+import org.example.Interval
+
 
 val infinity: Double = Double.POSITIVE_INFINITY
 val pi: Double = 3.1415926535897932385

@@ -11,7 +11,7 @@ import org.example.Sphere
 
 fun rayColor(r: Ray, world: Hittable): Color {
     val rec: HitRecord = HitRecord.default()
-    if (world.hit(r, 0.0, infinity, rec)) {
+    if (world.hit(r, Interval(0.0, infinity), rec)) {
         return 0.5 * (rec.normal + Color(1.0, 1.0, 1.0))
     }
 

@@ -24,6 +24,6 @@ data class HitRecord(
 }
 
 interface Hittable {
-    fun hit(r: Ray, rayTmin: Double, rayTmax: Double, rec: HitRecord): Boolean
+    fun hit(r: Ray, rayT: Interval, rec: HitRecord): Boolean
 }
 

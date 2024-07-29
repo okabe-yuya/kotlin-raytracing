@@ -19,16 +19,15 @@ class HittableList(
 
     override fun hit(
         r: Ray,
-        rayTmin: Double,
-        rayTmax: Double,
+        rayT: Interval,
         rec: HitRecord,
     ): Boolean {
         var tempRec: HitRecord = HitRecord.default()
         var hitAnything: Boolean = false
-        var closestSoFar = rayTmax
+        var closestSoFar = rayT.max
 
         objects.forEach {
-            if (it.hit(r, rayTmin, closestSoFar, tempRec)) {
+            if (it.hit(r, Interval(rayT.min, closestSoFar), tempRec)) {
                 hitAnything = true
                 closestSoFar = tempRec.t
 

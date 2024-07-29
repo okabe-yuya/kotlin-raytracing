@@ -12,8 +12,7 @@ class Sphere(val center: Point3, radius: Double) : Hittable {
 
     override fun hit(
         r: Ray,
-        rayTmin: Double,
-        rayTmax: Double,
+        rayT: Interval,
         rec: HitRecord,
     ): Boolean {
         val oc = center - r.origin
@@ -30,9 +29,9 @@ class Sphere(val center: Point3, radius: Double) : Hittable {
 
         // Find the nearest root that lies in the acceptable range.
         var root = (h - sqrtd) / a
-        if (root <= rayTmin || rayTmax <= root) {
+        if (!rayT.surrounds(root)) {
             root = (h + sqrtd) / a
-            if (root <= rayTmin || rayTmax <= root) {
+            if (!rayT.surrounds(root)) {
                 return false
             }
         }
