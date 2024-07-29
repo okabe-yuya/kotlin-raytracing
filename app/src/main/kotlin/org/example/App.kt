@@ -3,75 +3,22 @@
  */
 package org.example
 
+import org.example.Camera
 import org.example.Rtweekend.*
 import org.example.Hittable
 import org.example.HittableList
 import org.example.Sphere
 
 
-fun rayColor(r: Ray, world: Hittable): Color {
-    val rec: HitRecord = HitRecord.default()
-    if (world.hit(r, Interval(0.0, infinity), rec)) {
-        return 0.5 * (rec.normal + Color(1.0, 1.0, 1.0))
-    }
-
-    val unitDirection: Vec3 = unitVector(r.direction)
-    val a = 0.5 * (unitDirection.y + 1.0)
-    return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0)
-}
-
 fun main() {
-    // Image
-    val aspectRation = 16.0 / 9.0
-    val imageWidth: Int = 400
-    var imageHeight: Int = (imageWidth / aspectRation).toInt()
-    imageHeight = if (imageHeight < 1) {
-        1
-    } else {
-        imageHeight
-    }
-
-    // World
     val world: HittableList = HittableList()
     world.add(Sphere(Point3(0.0, 0.0, -1.0), 0.5))
     world.add(Sphere(Point3(0.0, -100.5, -1.0), 100.0))
 
-    // Camera
-    val focalLength = 1.0
-    val viewportHeight = 2.0
-    val viewportWidth = viewportHeight * (imageWidth.toDouble() / imageHeight)
-    val cameraCenter = Point3(0.0, 0.0, 0.0)
-
-    // Calculate the vectors across the horizontal and down the vertical viewport edges.
-    val viewportU = Vec3(viewportWidth, 0.0, 0.0)
-    val viewportV = Vec3(0.0, -viewportHeight, 0.0)
-
-    // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-    val pixelDeltaU = viewportU / imageWidth.toDouble()
-    val pixelDeltaV = viewportV / imageHeight.toDouble()
-
-    // Calculate the location of the upper left pixel.
-    val viewportUpperLeft = cameraCenter - Vec3(0.0, 0.0, focalLength) - viewportU / 2.0 - viewportV / 2.0
-    val pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV)
-    
-    // Render
-    print("P3\n${imageWidth} ${imageHeight}\n255\n") 
-
-    for  (j in 0..(imageHeight - 1)) {
-        for  (i in 0..(imageWidth - 1)) {
-            System.err.println("\rScanlines remaining: ${imageHeight - j} ")
-            System.err.flush()
-
-            val pixelCenter = pixel00Loc + (i.toDouble() * pixelDeltaU) + (j.toDouble() * pixelDeltaV)
-            val rayDirection = pixelCenter - cameraCenter
-            val r = Ray(cameraCenter, rayDirection)
-
-            val pixelColor = rayColor(r, world) 
-            writeColor(pixelColor)
-
-        }
-    }
-
-    System.err.println("\rDone.            \n")
+    val cam = Camera(
+        aspectRatio = 16.0 / 9.0,
+        imageWidth = 400
+    )
+    cam.render(world)
 }
 
