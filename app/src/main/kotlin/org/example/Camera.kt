@@ -6,12 +6,14 @@ import org.example.Hittable
 class Camera(
     val aspectRatio: Double = 1.0, // Ratio of image with over height
     val imageWidth: Int = 100, // Rendered image in pixel count
+    val samplesPerPixel: Int = 10, // Count of random samples for each pixel
 ) {
     private var imageHeight: Int // Rendered image height
     private var center: Point3 = Point3(0.0, 0.0, 0.0) // Camera center
     private var pixel00Loc: Point3 // Location of pixel 0, 0
     private var pixelDeltaU: Vec3 // Offset to pixel to the right
     private var pixelDeltaV: Vec3 // Offset to pixel below
+    private val pixelSamplesScale = 1.0 / samplesPerPixel // Color scale factor for a sum of pixel samples
 
     init {
         imageHeight = (imageWidth / aspectRatio).toInt()
@@ -39,22 +41,33 @@ class Camera(
         print("P3\n${imageWidth} ${imageHeight}\n255\n") 
 
         for  (j in 0..(imageHeight - 1)) {
+            System.err.println("\rScanlines remaining: ${imageHeight - j} ")
+            System.err.flush()
+
             for  (i in 0..(imageWidth - 1)) {
-                System.err.println("\rScanlines remaining: ${imageHeight - j} ")
-                System.err.flush()
-
-                val pixelCenter = pixel00Loc + (i.toDouble() * pixelDeltaU) + (j.toDouble() * pixelDeltaV)
-                val rayDirection = pixelCenter - center
-                val r = Ray(center, rayDirection)
-
-                val pixelColor = rayColor(r, world) 
-                writeColor(pixelColor)
-
+                val pixelColor = Color(0.0, 0.0, 0.0)
+                for (sample in 0..(samplesPerPixel - 1)) {
+                    val r: Ray = getRay(i, j)
+                    pixelColor += rayColor(r, world)
+                }
+                writeColor(pixelSamplesScale * pixelColor)
             }
         }
 
         System.err.println("\rDone.            \n")
+    }
 
+    fun getRay(i: Int, j: Int): Ray {
+        val offset = sampleSquare()
+        val pixelSample = pixel00Loc + ((i + offset.x) * pixelDeltaU) + ((j + offset.y) * pixelDeltaV)
+        val rayOrigin = center
+        val rayDirection = pixelSample - rayOrigin
+
+        return Ray(rayOrigin, rayDirection)
+    }
+
+    fun sampleSquare(): Vec3 {
+        return Vec3(randomDouble() - 0.5, randomDouble() - 0.5, 0.0)
     }
 
     fun rayColor(r: Ray, world: Hittable): Color {

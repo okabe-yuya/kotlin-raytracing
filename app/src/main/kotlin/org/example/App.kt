@@ -17,7 +17,8 @@ fun main() {
 
     val cam = Camera(
         aspectRatio = 16.0 / 9.0,
-        imageWidth = 400
+        imageWidth = 400,
+        samplesPerPixel = 100,
     )
     cam.render(world)
 }

@@ -10,6 +10,11 @@ class Interval(
     fun size(): Double = max - min
     fun contains(x: Double): Boolean = min <= x && x <= max
     fun surrounds(x: Double): Boolean = min < x && x < max
+    fun clamp(x: Double): Double {
+        if (x < min) return min
+        if (x > max) return max
+        return x
+    }
 
     companion object {
         val empty = Interval(+infinity, -infinity)
