@@ -7,6 +7,7 @@ class Camera(
     val aspectRatio: Double = 1.0, // Ratio of image with over height
     val imageWidth: Int = 100, // Rendered image in pixel count
     val samplesPerPixel: Int = 10, // Count of random samples for each pixel
+    val maxDepth: Int = 10 // Maximum number of ray bounces into scene
 ) {
     private var imageHeight: Int // Rendered image height
     private var center: Point3 = Point3(0.0, 0.0, 0.0) // Camera center
@@ -48,7 +49,7 @@ class Camera(
                 val pixelColor = Color(0.0, 0.0, 0.0)
                 for (sample in 0..(samplesPerPixel - 1)) {
                     val r: Ray = getRay(i, j)
-                    pixelColor += rayColor(r, world)
+                    pixelColor += rayColor(r, maxDepth, world)
                 }
                 writeColor(pixelSamplesScale * pixelColor)
             }
@@ -70,11 +71,15 @@ class Camera(
         return Vec3(randomDouble() - 0.5, randomDouble() - 0.5, 0.0)
     }
 
-    fun rayColor(r: Ray, world: Hittable): Color {
+    fun rayColor(r: Ray, depth: Int, world: Hittable): Color {
+        if (depth <= 0) {
+            return Color(0.0, 0.0, 0.0)
+        }
+
         val rec: HitRecord = HitRecord.default()
         if (world.hit(r, Interval(0.0, infinity), rec)) {
             val direction = randomOnHemisphere(rec.normal)
-            return 0.5 * rayColor(Ray(rec.p, direction), world)
+            return 0.5 * rayColor(Ray(rec.p, direction), depth - 1, world)
         }
 
         val unitDirection: Vec3 = unitVector(r.direction)
