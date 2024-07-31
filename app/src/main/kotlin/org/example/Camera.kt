@@ -77,9 +77,9 @@ class Camera(
         }
 
         val rec: HitRecord = HitRecord.default()
-        if (world.hit(r, Interval(0.0, infinity), rec)) {
-            val direction = randomOnHemisphere(rec.normal)
-            return 0.5 * rayColor(Ray(rec.p, direction), depth - 1, world)
+        if (world.hit(r, Interval(0.001, infinity), rec)) {
+            val direction = rec.normal + randomUnitVector()
+            return 0.1 * rayColor(Ray(rec.p, direction), depth - 1, world)
         }
 
         val unitDirection: Vec3 = unitVector(r.direction)
