@@ -73,7 +73,8 @@ class Camera(
     fun rayColor(r: Ray, world: Hittable): Color {
         val rec: HitRecord = HitRecord.default()
         if (world.hit(r, Interval(0.0, infinity), rec)) {
-            return 0.5 * (rec.normal + Color(1.0, 1.0, 1.0))
+            val direction = randomOnHemisphere(rec.normal)
+            return 0.5 * rayColor(Ray(rec.p, direction), world)
         }
 
         val unitDirection: Vec3 = unitVector(r.direction)

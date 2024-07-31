@@ -72,11 +72,40 @@ data class Vec3(
             e0 * v.e1 - e1 * v.e0,
         )
     }
+
+    companion object {
+        fun random(): Vec3 = Vec3(randomDouble(), randomDouble(), randomDouble())
+        fun random(min: Double, max: Double): Vec3 {
+            return Vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max))
+        }
+    }
 }
 
 
 fun unitVector(v: Vec3): Vec3 {
     return v / v.length()
+}
+
+fun randomInUnitSphere(): Vec3 {
+    while (true) {
+        val p = Vec3.random(-1.0, 1.0)
+        if (p.lengthSquared() < 1) {
+            return p
+        }
+    }
+}
+
+fun randomUnitVector(): Vec3 {
+    return unitVector(randomInUnitSphere())
+}
+
+fun randomOnHemisphere(normal: Vec3): Vec3 {
+    val onUnitSphere: Vec3 = randomUnitVector()
+    if (onUnitSphere.dot(normal) > 0.0) { // In the same hemisphere as the normal
+        return onUnitSphere
+    } else {
+        return -onUnitSphere
+    }
 }
 
 operator fun Double.times(v: Vec3): Vec3 {
