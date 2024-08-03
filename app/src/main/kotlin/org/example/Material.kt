@@ -31,14 +31,23 @@ data class Lambertian(val albedo: Color): Material {
     }
 }
 
-data class Metal(val albedo: Color): Material {
+data class Metal(
+    val albedo: Color,
+    var fuzz: Double,
+): Material {
+
+    init {
+        fuzz = if (fuzz < 1.0) fuzz else 1.0
+    }
+
     override fun scatter(
         rIn: Ray,
         rec: HitRecord,
         attenuation: Color,
         scattered: Ray
     ): Boolean {
-        val reflected = reflect(rIn.direction, rec.normal)
+        var reflected = reflect(rIn.direction, rec.normal)
+        reflected = unitVector(reflected) + (fuzz * randomUnitVector())
         scattered.origin = rec.p
         scattered.direction = reflected
 
@@ -46,7 +55,7 @@ data class Metal(val albedo: Color): Material {
         attenuation.e1 = albedo.y
         attenuation.e2 = albedo.z
 
-        return true
+        return scattered.direction.dot(rec.normal) > 0
     }
 }
 
