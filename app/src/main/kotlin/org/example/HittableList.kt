@@ -34,6 +34,7 @@ class HittableList(
                 rec.t = tempRec.t
                 rec.p = tempRec.p
                 rec.normal = tempRec.normal
+                rec.mat = tempRec.mat
             }
         }
 

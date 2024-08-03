@@ -1,9 +1,12 @@
 package org.example
 
+import org.example.Lambertian
+
 data class HitRecord(
     var p: Point3,
     var t: Double,
     var normal: Vec3,
+    var mat: Material? = null,
 ) {
     var frontFace: Boolean = false 
 

@@ -5,9 +5,13 @@ import kotlin.math.sqrt
 import org.example.Hittable
 import org.example.HitRecord
 import org.example.Vec3
+import org.example.Material
 
-
-class Sphere(val center: Point3, radius: Double) : Hittable {
+class Sphere(
+    val center: Point3,
+    radius: Double,
+    val mat: Material,
+) : Hittable {
     val radius: Double = max(0.0, radius)
 
     override fun hit(
@@ -41,6 +45,7 @@ class Sphere(val center: Point3, radius: Double) : Hittable {
 
         val outwardNormal: Vec3 = (rec.p - center) / radius
         rec.setFaceNormal(r, outwardNormal) 
+        rec.mat = mat
 
         return true
     }

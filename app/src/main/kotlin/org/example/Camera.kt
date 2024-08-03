@@ -2,6 +2,7 @@ package org.example
 
 import org.example.Rtweekend.*
 import org.example.Hittable
+import org.example.Material
 
 class Camera(
     val aspectRatio: Double = 1.0, // Ratio of image with over height
@@ -76,10 +77,15 @@ class Camera(
             return Color(0.0, 0.0, 0.0)
         }
 
-        val rec: HitRecord = HitRecord.default()
+        var rec: HitRecord = HitRecord.default()
         if (world.hit(r, Interval(0.001, infinity), rec)) {
-            val direction = rec.normal + randomUnitVector()
-            return 0.1 * rayColor(Ray(rec.p, direction), depth - 1, world)
+            val scattered: Ray = Ray.default()
+            val attenuation: Color = Color(0.0, 0.0, 0.0)
+
+            if (rec.mat?.scatter(r, rec, attenuation, scattered) == true) {
+                return attenuation * rayColor(scattered, depth - 1, world)
+            }
+            return Color(0.0, 0.0, 0.0) 
         }
 
         val unitDirection: Vec3 = unitVector(r.direction)

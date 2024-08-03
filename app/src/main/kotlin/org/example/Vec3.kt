@@ -1,6 +1,7 @@
 package org.example
 
 import kotlin.math.sqrt
+import kotlin.math.abs
 
 data class Vec3(
     var e0: Double = 0.0,
@@ -62,6 +63,11 @@ data class Vec3(
         return e0 * e0 + e1 * e1 + e2 * e2
     }
 
+    fun nearZero(): Boolean {
+        val s = 1e-8
+        return abs(e0) < s && abs(e1) < s && abs(e2) < s
+    }
+
     fun dot(v: Vec3): Double {
         return e0 * v.e0 + e1 * v.e1 + e2 * v.e2
     }
@@ -93,6 +99,10 @@ fun randomInUnitSphere(): Vec3 {
             return p
         }
     }
+}
+
+fun reflect(v: Vec3, n: Vec3): Vec3 {
+    return v - 2 * v.dot(n) * n
 }
 
 fun randomUnitVector(): Vec3 {
