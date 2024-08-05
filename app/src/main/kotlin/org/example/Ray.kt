@@ -12,6 +12,11 @@ class Ray(
         return origin + t * direction
     }
 
+    fun update(origin: Point3, direction: Vec3) {
+        this.origin = origin
+        this.direction = direction
+    }
+
     companion object {
         fun default(): Ray {
             return Ray(

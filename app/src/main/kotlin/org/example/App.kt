@@ -15,7 +15,7 @@ fun main() {
 
     val materialGround = Lambertian(Color(0.8, 0.8, 0.0))
     val materialCenter = Lambertian(Color(0.1, 0.2, 0.5))
-    val materialLeft = Metal(Color(0.8, 0.8, 0.8), 0.3)
+    val materialLeft = Dielectric(1.50)
     val materialRight = Metal(Color(0.8, 0.6, 0.2), 1.0)
 
     world.add(Sphere(Point3(0.0, -100.5, -1.0), 100.0, materialGround))

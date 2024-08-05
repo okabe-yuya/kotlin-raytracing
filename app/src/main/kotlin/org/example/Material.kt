@@ -20,12 +20,8 @@ data class Lambertian(val albedo: Color): Material {
             scatterDirection = rec.normal
         }
         
-        scattered.origin = rec.p
-        scattered.direction = scatterDirection
-
-        attenuation.e0 = albedo.x
-        attenuation.e1 = albedo.y
-        attenuation.e2 = albedo.z
+        scattered.update(rec.p, scatterDirection)
+        attenuation.update(albedo.x, albedo.y, albedo.z)
 
         return true
     }
@@ -48,14 +44,32 @@ data class Metal(
     ): Boolean {
         var reflected = reflect(rIn.direction, rec.normal)
         reflected = unitVector(reflected) + (fuzz * randomUnitVector())
-        scattered.origin = rec.p
-        scattered.direction = reflected
 
-        attenuation.e0 = albedo.x
-        attenuation.e1 = albedo.y
-        attenuation.e2 = albedo.z
+        scattered.update(rec.p, reflected)
+        attenuation.update(albedo.x, albedo.y, albedo.z)
 
         return scattered.direction.dot(rec.normal) > 0
+    }
+}
+
+class Dielectric(
+    val refractionIndex: Double,
+): Material {
+    override fun scatter(
+        rIn: Ray,
+        rec: HitRecord,
+        attenuation: Color,
+        scattered: Ray,
+    ): Boolean {
+        attenuation.update(1.0, 1.0, 1.0)
+
+        val ri: Double = if (rec.frontFace) (1.0 / refractionIndex) else refractionIndex
+        val unitDirection: Vec3 = unitVector(rIn.direction)
+        val refracted = refract(unitDirection, rec.normal, ri)
+
+        scattered.update(rec.p, refracted)
+
+        return true
     }
 }
 

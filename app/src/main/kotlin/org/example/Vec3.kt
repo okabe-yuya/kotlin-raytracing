@@ -79,6 +79,12 @@ data class Vec3(
         )
     }
 
+    fun update(e0: Double, e1: Double, e2: Double) {
+        this.e0 = e0
+        this.e1 = e1
+        this.e2 = e2
+    }
+
     companion object {
         fun random(): Vec3 = Vec3(randomDouble(), randomDouble(), randomDouble())
         fun random(min: Double, max: Double): Vec3 {
@@ -103,6 +109,14 @@ fun randomInUnitSphere(): Vec3 {
 
 fun reflect(v: Vec3, n: Vec3): Vec3 {
     return v - 2 * v.dot(n) * n
+}
+
+fun refract(uv: Vec3, n: Vec3, etaiOverEtat: Double): Vec3 {
+    val cosTheta = minOf(-uv.dot(n), 1.0)
+    val rOutPerp: Vec3 = etaiOverEtat * (uv + cosTheta * n)
+    val rOutParallel: Vec3 = -sqrt(abs(1.0 - rOutPerp.lengthSquared())) * n
+
+    return rOutPerp + rOutParallel
 }
 
 fun randomUnitVector(): Vec3 {
