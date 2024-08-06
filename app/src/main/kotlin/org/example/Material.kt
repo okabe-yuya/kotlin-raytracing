@@ -1,5 +1,7 @@
 package org.example
 
+import kotlin.math.sqrt
+import kotlin.math.pow
 import org.example.Rtweekend.*
 import org.example.HitRecord
 
@@ -65,11 +67,26 @@ class Dielectric(
 
         val ri: Double = if (rec.frontFace) (1.0 / refractionIndex) else refractionIndex
         val unitDirection: Vec3 = unitVector(rIn.direction)
-        val refracted = refract(unitDirection, rec.normal, ri)
+        val cosTheta: Double = minOf(-unitDirection.dot(rec.normal), 1.0)
+        val sinTheta: Double = sqrt(1.0 - cosTheta * cosTheta)
+        val canNotRefract: Boolean = ri * sinTheta > 1.0
 
-        scattered.update(rec.p, refracted)
+        lateinit var direction: Vec3
+        if (canNotRefract || reflectance(cosTheta, ri) > randomDouble()) {
+            direction = reflect(unitDirection, rec.normal)
+        } else {
+            direction = refract(unitDirection, rec.normal, ri)
+        }
+        scattered.update(rec.p, direction)
 
         return true
+    }
+
+    fun reflectance(cosine: Double, refractionIndex: Double): Double {
+        // Use Schlink's approximation for reflectance.
+        var r0 = (1 - refractionIndex) / (1 + refractionIndex)
+        r0 = r0 * r0
+        return r0 + (1 - r0) * (1 - cosine).pow(5.0)
     }
 }
 

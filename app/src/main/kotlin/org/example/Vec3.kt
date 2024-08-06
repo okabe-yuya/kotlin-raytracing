@@ -116,7 +116,7 @@ fun refract(uv: Vec3, n: Vec3, etaiOverEtat: Double): Vec3 {
     val rOutPerp: Vec3 = etaiOverEtat * (uv + cosTheta * n)
     val rOutParallel: Vec3 = -sqrt(abs(1.0 - rOutPerp.lengthSquared())) * n
 
-    return rOutPerp + rOutParallel
+    return rOutPerp - rOutParallel
 }
 
 fun randomUnitVector(): Vec3 {
