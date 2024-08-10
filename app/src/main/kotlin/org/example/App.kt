@@ -14,28 +14,53 @@ import org.example.Sphere
 fun main() {
     val world: HittableList = HittableList()
 
-    val materialGround = Lambertian(Color(0.8, 0.8, 0.0))
-    val materialCenter = Lambertian(Color(0.1, 0.2, 0.5))
-    val materialLeft = Dielectric(1.50)
-    val materialBubble = Dielectric(1.00 / 1.50)
-    val materialRight = Metal(Color(0.8, 0.6, 0.2), 1.0)
+    val groundMaterial = Lambertian(Color(0.5, 0.5, 0.5))
+    world.add(Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, groundMaterial))
 
-    world.add(Sphere(Point3(0.0, -100.5, -1.0), 100.0, materialGround))
-    world.add(Sphere(Point3(0.0, 0.0, -1.2), 0.5, materialCenter))
-    world.add(Sphere(Point3(-1.0, 0.0, -1.0), 0.5, materialLeft))
-    world.add(Sphere(Point3(-1.0, 0.0, -1.0), 0.4, materialBubble))
-    world.add(Sphere(Point3(1.0, -0.0, -1.0), 0.5, materialRight))
+    for (a in -11..11) {
+        for (b in -11..11) {
+            val chooseMat = randomDouble()
+            val center: Point3 = Point3(a + 0.9 * randomDouble(), 0.2, b + 0.9 * randomDouble())
+
+            if ((center - Point3(4.0, 0.2, 0.0)).length() > 0.9) {
+                if (chooseMat < 0.8) {
+                    val albedo = Color(randomDouble(), randomDouble(), randomDouble())
+                    val sphereMaterial = Lambertian(albedo)
+                    world.add(Sphere(center, 0.2, sphereMaterial))
+                } else if (chooseMat < 0.95) {
+                    val albedo = Color(randomDouble(0.5, 1.0), randomDouble(0.5, 1.0), randomDouble(0.5, 1.0))
+                    val fuzz = randomDouble(0.0, 0.5)
+                    val sphereMaterial = Metal(albedo, fuzz)
+                    world.add(Sphere(center, 0.2, sphereMaterial))
+                } else {
+                    val sphereMaterial = Dielectric(1.5)
+                    world.add(Sphere(center, 0.2, sphereMaterial))
+                }
+            }
+        }
+    }
+
+    val material1 = Dielectric(1.5)
+    world.add(Sphere(Point3(0.0, 1.0, 0.0), 1.0, material1))
+
+    val material2 = Lambertian(Color(0.4, 0.2, 0.1))
+    world.add(Sphere(Point3(-4.0, 1.0, 0.0), 1.0, material2))
+
+    val material3 = Metal(Color(0.7, 0.6, 0.5), 0.0)
+    world.add(Sphere(Point3(4.0, 1.0, 0.0), 1.0, material3))
+
 
     val cam = Camera(
         aspectRatio = 16.0 / 9.0,
-        imageWidth = 400,
-        samplesPerPixel = 100,
+        imageWidth = 1200,
+        samplesPerPixel = 500,
+        maxDepth = 50,
         vFov = 20.0,
-        lookFrom = Point3(-2.0, 2.0, 1.0),
-        lookAt = Point3(0.0, 0.0, -1.0),
+        lookFrom = Point3(13.0, 2.0, 3.0),
+        lookAt = Point3(0.0, 0.0, 0.0),
         vup = Vec3(0.0, 1.0, 0.0),
-        defocusAngle = 10.0,
-        focusDist = 3.4,
+        defocusAngle = 0.6,
+        focusDist = 10.0,
     )
     cam.render(world)
 }
