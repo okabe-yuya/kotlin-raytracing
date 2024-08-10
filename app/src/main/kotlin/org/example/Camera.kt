@@ -1,5 +1,6 @@
 package org.example
 
+import kotlin.math.tan
 import org.example.Rtweekend.*
 import org.example.Hittable
 import org.example.Material
@@ -8,34 +9,51 @@ class Camera(
     val aspectRatio: Double = 1.0, // Ratio of image with over height
     val imageWidth: Int = 100, // Rendered image in pixel count
     val samplesPerPixel: Int = 10, // Count of random samples for each pixel
-    val maxDepth: Int = 10 // Maximum number of ray bounces into scene
+    val maxDepth: Int = 10, // Maximum number of ray bounces into scene
+    val vFov: Double = 90.0, // Vertical view angle (field of view)
+    val lookFrom: Point3 = Point3(0.0, 0.0, 0.0), // Point camera is looking from
+    val lookAt: Point3 = Point3(0.0, 0.0, -1.0), // POint camera is looking at
+    val vup: Vec3 = Vec3(0.0, 1.0, 0.0) // Camera-relative "up" direction
 ) {
     private var imageHeight: Int // Rendered image height
-    private var center: Point3 = Point3(0.0, 0.0, 0.0) // Camera center
+    private var center: Point3 // Camera center
     private var pixel00Loc: Point3 // Location of pixel 0, 0
     private var pixelDeltaU: Vec3 // Offset to pixel to the right
     private var pixelDeltaV: Vec3 // Offset to pixel below
-    private val pixelSamplesScale = 1.0 / samplesPerPixel // Color scale factor for a sum of pixel samples
+    private var pixelSamplesScale: Double // Color scale factor for a sum of pixel samples
+    private var u: Vec3 // Camera frame basic vectors
+    private var v: Vec3 // Camera frame basic vectors
+    private var w: Vec3 // Camera frame basic vectors
 
     init {
         imageHeight = (imageWidth / aspectRatio).toInt()
         imageHeight = if (imageHeight < 1) 1 else imageHeight
 
+        center = lookFrom
+        pixelSamplesScale = 1.0 / samplesPerPixel
+
         // Determine viewport dimensions
-        val focalLength = 1.0
-        val viewportHeight = 2.0
+        val focalLength = (lookFrom - lookAt).length()
+        val theta = degreesToRadius(vFov)
+        val h = tan(theta / 2)
+        val viewportHeight = 2 * h * focalLength
         val viewportWidth = viewportHeight * (imageWidth.toDouble() / imageHeight)
 
+        // Calculate the u,v,w unit basic vectors for the camera coordinate frame.
+        w = unitVector(lookFrom - lookAt)
+        u = unitVector(vup.cross(w))
+        v = w.cross(u)
+
         // Calculate the vectors across the horizontal and down the vertical viewport edges.         
-        val viewportU = Vec3(viewportWidth, 0.0, 0.0)
-        val viewportV = Vec3(0.0, -viewportHeight, 0.0)
+        val viewportU = viewportWidth * u
+        val viewportV = viewportHeight * -v
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel
         pixelDeltaU = viewportU / imageWidth.toDouble()
         pixelDeltaV = viewportV / imageHeight.toDouble()
 
         // Calculate the location of the upper left pixel
-        val viewportUpperLeft = center - Vec3(0.0, 0.0, focalLength) - viewportU / 2.0 - viewportV / 2.0
+        val viewportUpperLeft = center - (focalLength * w) - viewportU / 2.0 - viewportV / 2.0
         pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV)
     }
 

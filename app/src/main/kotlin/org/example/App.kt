@@ -3,6 +3,7 @@
  */
 package org.example
 
+import kotlin.math.cos
 import org.example.Camera
 import org.example.Rtweekend.*
 import org.example.Hittable
@@ -23,12 +24,16 @@ fun main() {
     world.add(Sphere(Point3(0.0, 0.0, -1.2), 0.5, materialCenter))
     world.add(Sphere(Point3(-1.0, 0.0, -1.0), 0.5, materialLeft))
     world.add(Sphere(Point3(-1.0, 0.0, -1.0), 0.4, materialBubble))
-    world.add(Sphere(Point3(1.0, 0.0, -1.0), 0.5, materialRight))
+    world.add(Sphere(Point3(1.0, -0.0, -1.0), 0.5, materialRight))
 
     val cam = Camera(
         aspectRatio = 16.0 / 9.0,
         imageWidth = 400,
         samplesPerPixel = 100,
+        vFov = 90.0,
+        lookFrom = Point3(-2.0, 2.0, 1.0),
+        lookAt = Point3(0.0, 0.0, -1.0),
+        vup = Vec3(0.0, 1.0, 0.0),
     )
     cam.render(world)
 }
