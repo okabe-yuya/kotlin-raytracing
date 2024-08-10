@@ -133,6 +133,15 @@ fun randomOnHemisphere(normal: Vec3): Vec3 {
     }
 }
 
+fun randomInUnitDisk(): Vec3 {
+    while(true) {
+        val p = Vec3(randomDouble(-1.0, 1.0), randomDouble(-1.0, 1.0), 0.0)
+        if (p.lengthSquared() < 1.0) {
+            return p
+        }
+    }
+}
+
 operator fun Double.times(v: Vec3): Vec3 {
     return Vec3(this * v.e0, this * v.e1, this * v.e2)
 }

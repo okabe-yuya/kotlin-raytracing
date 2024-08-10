@@ -30,10 +30,12 @@ fun main() {
         aspectRatio = 16.0 / 9.0,
         imageWidth = 400,
         samplesPerPixel = 100,
-        vFov = 90.0,
+        vFov = 20.0,
         lookFrom = Point3(-2.0, 2.0, 1.0),
         lookAt = Point3(0.0, 0.0, -1.0),
         vup = Vec3(0.0, 1.0, 0.0),
+        defocusAngle = 10.0,
+        focusDist = 3.4,
     )
     cam.render(world)
 }

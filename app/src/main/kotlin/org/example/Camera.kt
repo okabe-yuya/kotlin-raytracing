@@ -13,7 +13,9 @@ class Camera(
     val vFov: Double = 90.0, // Vertical view angle (field of view)
     val lookFrom: Point3 = Point3(0.0, 0.0, 0.0), // Point camera is looking from
     val lookAt: Point3 = Point3(0.0, 0.0, -1.0), // POint camera is looking at
-    val vup: Vec3 = Vec3(0.0, 1.0, 0.0) // Camera-relative "up" direction
+    val vup: Vec3 = Vec3(0.0, 1.0, 0.0), // Camera-relative "up" direction
+    val defocusAngle: Double = 0.0, // Variation angle of rays through each pixel
+    val focusDist: Double = 10.0, // Distance from camera lookfrom point to plane of perfect focus
 ) {
     private var imageHeight: Int // Rendered image height
     private var center: Point3 // Camera center
@@ -24,6 +26,8 @@ class Camera(
     private var u: Vec3 // Camera frame basic vectors
     private var v: Vec3 // Camera frame basic vectors
     private var w: Vec3 // Camera frame basic vectors
+    private var defocusDiskU: Vec3 // Defocus disk horizontal radius
+    private var defocusDiskV: Vec3 // Defocus disk vertical radius
 
     init {
         imageHeight = (imageWidth / aspectRatio).toInt()
@@ -33,10 +37,9 @@ class Camera(
         pixelSamplesScale = 1.0 / samplesPerPixel
 
         // Determine viewport dimensions
-        val focalLength = (lookFrom - lookAt).length()
         val theta = degreesToRadius(vFov)
         val h = tan(theta / 2)
-        val viewportHeight = 2 * h * focalLength
+        val viewportHeight = 2 * h * focusDist
         val viewportWidth = viewportHeight * (imageWidth.toDouble() / imageHeight)
 
         // Calculate the u,v,w unit basic vectors for the camera coordinate frame.
@@ -53,8 +56,14 @@ class Camera(
         pixelDeltaV = viewportV / imageHeight.toDouble()
 
         // Calculate the location of the upper left pixel
-        val viewportUpperLeft = center - (focalLength * w) - viewportU / 2.0 - viewportV / 2.0
+        val viewportUpperLeft = center - (focusDist * w) - viewportU / 2.0 - viewportV / 2.0
         pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV)
+
+        // Calculate the camera defocus disk basic vectors.
+        val defocusRadius = focusDist * tan(degreesToRadius(defocusAngle / 2.0))
+        defocusDiskU = u * defocusRadius
+        defocusDiskV = v * defocusRadius
+
     }
 
     fun render(world: Hittable): Unit {
@@ -80,10 +89,15 @@ class Camera(
     fun getRay(i: Int, j: Int): Ray {
         val offset = sampleSquare()
         val pixelSample = pixel00Loc + ((i + offset.x) * pixelDeltaU) + ((j + offset.y) * pixelDeltaV)
-        val rayOrigin = center
+        val rayOrigin = if (defocusAngle <= 0.0) center else defocusDiskSample()
         val rayDirection = pixelSample - rayOrigin
 
         return Ray(rayOrigin, rayDirection)
+    }
+
+    fun defocusDiskSample(): Point3 {
+        val p = randomInUnitDisk()
+        return center + (p[0] * defocusDiskU) + (p[1] * defocusDiskV)
     }
 
     fun sampleSquare(): Vec3 {
